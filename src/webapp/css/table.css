@@ -1,0 +1,19 @@
+#links a {
+    margin: 0 10px;
+}
+table{
+    border: 1px solid;
+    text-align: center;
+    width: 50%
+}
+tr, td, th {
+    border: 1px solid
+}
+
+.show {
+    margin: 2.5% auto
+}
+
+.copy {
+    margin: 0 0 0 1em
+}

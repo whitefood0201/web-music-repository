@@ -1,0 +1,23 @@
+<!doctype html>
+<meta charset="UTF-8">
+
+<html lang="zh-CN">
+<head>
+    <title>上传</title>
+    <link rel="stylesheet" type="text/css" href="css/format.css" />
+    <link rel="stylesheet" type="text/css" href="css/table.css" />
+    <link rel="stylesheet" type="text/css" href="css/form.css" />
+</head>
+
+<body id="container">
+    <h1>上传</h1>
+
+    <div>
+        <form action="/mup/action/upload" method="post" enctype="multipart/form-data" class="form">
+            <div class="typein">
+                <input class="file" id="selectFile" type="file" name="file" value="" />
+            </div>
+            <input class="subm" type="submit" value="上传" />
+        </form>
+    </div>
+</body>

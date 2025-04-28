@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+                      https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+         version="5.0"
+         metadata-complete="true">
+
+    <!-- ============ configuration ============ -->
+
+    <context-param>
+        <param-name>staticPath</param-name>
+        <param-value>/static</param-value>
+    </context-param>
+    <context-param>
+        <param-name>dao</param-name>
+        <param-value>txt</param-value>
+    </context-param>
+    <context-param>
+        <param-name>dbFile</param-name>
+        <param-value>/db/musics.txt</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>url</param-name>
+        <param-value>jdbc:mysql://localhost:3306/web?useUnicode=true&amp;characterEncoding=utf8</param-value>
+    </context-param>
+    <context-param>
+        <param-name>driver</param-name>
+        <param-value>com.mysql.cj.jdbc.Driver</param-value>
+    </context-param>
+    <context-param>
+        <param-name>user</param-name>
+        <param-value>114514</param-value>
+    </context-param>
+    <context-param>
+        <param-name>password</param-name>
+        <param-value>1919810</param-value>
+    </context-param>
+
+    <!--  Using deleteServlet? -->
+    <!--  /mup/action/delete?username=11&pwd=45&mid=14  -->
+    <context-param>
+        <param-name>canDelete</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>username</param-name>
+        <param-value>admin</param-value>
+    </context-param>
+    <context-param>
+        <param-name>pwd</param-name>
+        <param-value>123admin</param-value>
+    </context-param>
+
+    <!-- ============ configuration ============ -->
+
+
+
+    <listener>
+        <listener-class>com.whitefood.listener.AppContextListener</listener-class>
+    </listener>
+
+
+    <servlet>
+        <servlet-name>uploadServlet</servlet-name>
+        <servlet-class>com.whitefood.servlet.action.UploadServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>uploadServlet</servlet-name>
+        <url-pattern>/action/upload</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>searchServlet</servlet-name>
+        <servlet-class>com.whitefood.servlet.action.SearchServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>searchServlet</servlet-name>
+        <url-pattern>/action/search</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>deleteServlet</servlet-name>
+        <servlet-class>com.whitefood.servlet.action.DeleteServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>deleteServlet</servlet-name>
+        <url-pattern>/action/delete</url-pattern>
+    </servlet-mapping>
+
+
+    <welcome-file-list>
+        <welcome-file>upload.html</welcome-file>
+    </welcome-file-list>
+</web-app>

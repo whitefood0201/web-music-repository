@@ -1,0 +1,44 @@
+<!doctype html>
+<meta charset="UTF-8">
+
+<html lang="zh-CN">
+<head>
+    <title>查找</title>
+    <link rel="stylesheet" type="text/css" href="css/format.css" />
+    <link rel="stylesheet" type="text/css" href="css/form.css" />
+    <link rel="stylesheet" type="text/css" href="css/table.css" />
+</head>
+
+<body id="container">
+    <script type="text/javascript" src="js/show.js"></script>
+    <h1>查找</h1>
+
+    <div>
+        <form action="/mup/action/search" class="form" onsubmit="loadData(); return false;">
+            <div class="typein">
+                <div class="together">
+                    查找: <input type="text" name="text" id="searchText" value="" />
+                </div>
+                <div class="together line">
+                    根据
+                    <b>
+                        <input type="radio" name="way" value="1" checked=""/>MID
+                        <input type="radio" name="way" value="0" />名称
+                    </b>
+                    查找
+                </div>
+            </div>
+            <input class="subm" type="button" value="查找" onclick="loadData()" />
+        </form>
+    </div>
+    
+    <table class="show" id="show">
+        <tbody id="head">
+            <tr>
+                <th>MID</th>
+                <th>URL</th>
+                <th>时长</th>
+            </tr>
+        </tbody>
+    </table>
+</body>

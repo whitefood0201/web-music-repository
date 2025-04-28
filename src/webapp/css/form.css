@@ -1,0 +1,32 @@
+/* css for form  */
+.form {
+    text-align: left;
+    width: 100%;
+    height: 100%;
+    margin: 5% 0;
+}
+.form input {
+    display: block;
+}
+
+
+.typein {
+    margin: 10% 5%;
+}
+.form .together {
+    margin: 0.75em 0;
+}
+.form .together * {
+    margin: 0.25em 0;
+}
+.form .line * {
+    display: inline;
+}
+.subm {
+    width: 30%;
+    margin: auto;
+}
+
+#type {
+    width: 15em;
+}

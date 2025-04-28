@@ -1,0 +1,19 @@
+/* center */
+#container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 水平居中 */
+}
+
+.around {
+    border: 2px solid black; /* div边框 */
+    display: inline-block;    /* 让div自适应子元素大小 */
+    padding: 10px;           /* 可选，让内容和边框有点间距 */
+    width: 100%;
+}
+
+._center {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 水平居中 */
+}

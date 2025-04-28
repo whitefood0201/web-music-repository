@@ -1,0 +1,2 @@
+id_max=1
+mid | mname | duration
