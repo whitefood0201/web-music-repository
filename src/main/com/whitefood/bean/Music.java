@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class Music {
     
-    private int mid ;
+    private int mid = -1;
     private String name;
     private int duration; // in second
     
@@ -67,7 +67,7 @@ public class Music {
      */
     public boolean isEmpty() {
         return (this.name == null || this.name.isEmpty())
-                && this.mid == 0;
+                && this.mid == -1;
         
     }
 }

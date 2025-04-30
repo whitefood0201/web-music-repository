@@ -26,7 +26,7 @@ public class DBMusicDao implements MusicDao {
         try {
             connection = this.pool.getConnection();
             
-            if (music == null || music.isEmpty()){
+            if (music == null || music.isEmpty() || music.getMid() == 0){
                 ps = connection.prepareStatement("select mid, mname, duration from t_mups");
             } else if (music.getMid() > 0){
                 ps = connection.prepareStatement("select mid, mname, duration from t_mups where mid = ?");
@@ -55,7 +55,7 @@ public class DBMusicDao implements MusicDao {
             this.pool.close(connection, ps, rs);
         }
         
-        return null;
+        return new ArrayList<>();
     }
     
     @Override

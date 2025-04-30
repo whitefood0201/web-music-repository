@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
-@WebServlet({"/action/search"})
+@WebServlet("/action/search")
 public class SearchServlet extends HttpServlet {
     
     MusicService service = new MusicServiceImpl();
@@ -29,11 +29,15 @@ public class SearchServlet extends HttpServlet {
         MusicService.SelectWay way = MusicService.SelectWay.values()[Integer.parseInt(req.getParameter("way"))];
         List<Music> music = service.selectBy(searchText, way);
         
+        
+        resp.setContentType("text/json;charset=UTF-8");
+        resp.setCharacterEncoding("UTF-8");
+        
         PrintWriter out = resp.getWriter();
         
         out.println("{");
         out.println("\"response\": 200,");
-        out.println("\"datas\":" + (music == null ? "" : music));
+        out.println("\"datas\":" + music);
         out.println("}");
         
         out.flush();
