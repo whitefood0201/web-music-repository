@@ -12,9 +12,34 @@ var getRadioValue = function(radioName){
 
 var copyClick = function(copyText, button){
     return () => {
-        navigator.clipboard.writeText(copyText);
-        button.innerText = "copied"
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(copyText).then(() => {
+                button.innerText = "copied";
+            }).catch(err => {
+                console.error("Clipboard error:", err);
+                fallbackCopyTextToClipboard(copyText, button);
+            });
+        } else {
+            fallbackCopyTextToClipboard(copyText, button);
+        }
     };
+};
+
+function fallbackCopyTextToClipboard(text, button) {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.style.position = "fixed";
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    try {
+        const successful = document.execCommand('copy');
+        button.innerText = successful ? "copied" : "failed";
+    } catch (err) {
+        console.error("Fallback failed:", err);
+        button.innerText = "error";
+    }
+    document.body.removeChild(textarea);
 }
 
 window.onload = function(){
