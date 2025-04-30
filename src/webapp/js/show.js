@@ -1,6 +1,47 @@
 var SEARCH_URL = "/mup/action/search";
 var STATIC_FOLDER = "/mup/static/";
 
+var getRadioValue = function(radioName){
+    var radio = document.getElementsByName(radioName);
+    for(i = 0; i<radio.length; i++){
+        if (radio[i].checked){
+            return radio[i].value
+        }
+    }
+}
+
+var copyClick = function(copyText, button){
+    return () => {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(copyText).then(() => {
+                button.innerText = "copied";
+            }).catch(err => {
+                console.error("Clipboard error:", err);
+                fallbackCopyTextToClipboard(copyText, button);
+            });
+        } else {
+            fallbackCopyTextToClipboard(copyText, button);
+        }
+    };
+};
+
+function fallbackCopyTextToClipboard(text, button) {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.style.position = "fixed";
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    try {
+        const successful = document.execCommand('copy');
+        button.innerText = successful ? "copied" : "failed";
+    } catch (err) {
+        console.error("Fallback failed:", err);
+        button.innerText = "error";
+    }
+    document.body.removeChild(textarea);
+}
+
 window.onload = function(){
     var url_string = window.location.href;
 	const params = new URL(url_string).searchParams;
@@ -29,15 +70,6 @@ var loadData = function() {
         });
 }
 
-var getRadioValue = function(radioName){
-    var radio = document.getElementsByName(radioName);
-    for(i = 0; i<radio.length; i++){
-        if (radio[i].checked){
-            return radio[i].value
-        }
-    }
-}
-
 var showData = function(datas) {
     var table = document.getElementById("show");
     var removeNode = function(node) {
@@ -61,17 +93,29 @@ var showData = function(datas) {
         const td_mid = document.createElement("td");
         td_mid.innerText = mid;
 
+        var copid = document.createElement("button");
+        copid.innerText = "copy";
+        copid.className = "copy"
+        copid.onclick = copyClick(mid, copid)
+        td_mid.appendChild(copid);
+
         const td_url = document.createElement("td");
-        td_url.innerHTML = data.name === 0 ? "无数据" : `<a href="${url}">${data.name}</a>`;
+        td_url.innerHTML = (data.name === 0 ? "无数据" : `<a href="${url}">${data.name}</a>`);
         
-        var cop = document.createElement("button");
-        cop.innerText = "copy";
-        cop.className = "copy"
-        cop.onclick = () => navigator.clipboard.writeText(url);
-        td_url.appendChild(cop);
+        var coptx = document.createElement("button");
+        coptx.innerText = "copy";
+        coptx.className = "copy"
+        coptx.onclick = copyClick((data.name === 0 ? "无数据" : url), coptx)
+        td_url.appendChild(coptx);
 
         const td_durat = document.createElement("td");
         td_durat.innerText = duration;
+
+        var copdu = document.createElement("button");
+        copdu.innerText = "copy";
+        copdu.className = "copy"
+        copdu.onclick = copyClick(duration, copdu)
+        td_durat.appendChild(copdu);
 
         const tr = document.createElement("tr");
         tr.appendChild(td_mid);

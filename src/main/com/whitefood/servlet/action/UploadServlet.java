@@ -21,7 +21,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 
 
-@WebServlet({"/action/upload"})
+@WebServlet("/action/upload")
 @MultipartConfig(
         fileSizeThreshold = 1024*1024 * 3, // 3MB
         maxFileSize = 1024*1024 * 15, // 15MB
