@@ -16,6 +16,8 @@ import java.util.*;
  */
 public class TxtLoader {
     
+    public static final String DATA_STRUCTURE = "mid | mname | duration | artists";
+    
     private static TxtLoader instance;
     
     /**
@@ -38,7 +40,7 @@ public class TxtLoader {
     private TxtLoader() {
         try (InputStream stream = AppContextListener.getServletContext().getResourceAsStream(this.dbFile)) {
             if (stream == null) {
-                System.out.println("db file not found! Created a new one");
+                AppContextListener.getServletContext().log("db file not found! Created a new one");
                 this.musicList = new ArrayList<>();
                 this.idMax = 0;
                 return;
@@ -48,7 +50,7 @@ public class TxtLoader {
                 String max = br.readLine();
                 int idMax = Integer.parseInt(max.substring(7));
                 
-                br.readLine(); // 数据格式定义行
+                br.readLine(); // 跳过数据格式定义行
                 
                 List<Music> musics = new ArrayList<>();
                 String data;
@@ -57,18 +59,19 @@ public class TxtLoader {
                     
                     int mid = Integer.parseInt(d[0]);
                     String name = d[1];
-                    int duration = Integer.parseInt(d[2]);
+                    List<String> artists = Arrays.stream(d[2].split("/")).toList();
+                    int duration = Integer.parseInt(d[3]);
                     
-                    musics.add(new Music(mid, name, duration));
+                    musics.add(new Music(mid, name, duration, artists));
                 }
                 
                 this.idMax = idMax;
                 this.musicList = musics;
             } catch (IOException e) {
-                e.printStackTrace();
+                AppContextListener.getServletContext().log("while loading txtdb data", e);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            AppContextListener.getServletContext().log("while accessing txtdb file", e);
         }
     }
     
@@ -82,12 +85,16 @@ public class TxtLoader {
             writer.write("id_max=");
             writer.write(String.valueOf(this.idMax));
             writer.newLine();
-            writer.write("mid | mname | duration\n");
+            
+            writer.write(DATA_STRUCTURE);
+            writer.newLine();
             
             for (Music music : this.musicList) {
                 writer.write(String.valueOf(music.getMid()));
                 writer.write(" | ");
                 writer.write(music.getName());
+                writer.write(" | ");
+                writer.write(String.join("/", music.getArtists()));
                 writer.write(" | ");
                 writer.write(String.valueOf(music.getDuration()));
                 writer.newLine();
@@ -95,7 +102,7 @@ public class TxtLoader {
             
             writer.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            AppContextListener.getServletContext().log("while saving txtdb file", e);
         }
     }
     

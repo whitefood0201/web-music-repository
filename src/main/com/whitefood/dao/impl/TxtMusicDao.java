@@ -4,8 +4,8 @@ import com.whitefood.bean.Music;
 import com.whitefood.dao.MusicDao;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 public class TxtMusicDao implements MusicDao {
     
@@ -20,7 +20,10 @@ public class TxtMusicDao implements MusicDao {
         } else if (music.getMid() > 0){
             return this.loader.getMusicList().stream().filter(m -> m.getMid() == music.getMid()).toList();
         } else if (music.getName() != null){
-            return this.loader.getMusicList().stream().filter(m -> Objects.equals(m.getName(), music.getName())).toList();
+            return this.loader.getMusicList().stream().filter(m -> m.getName().contains(music.getName())).toList();
+        } else if (music.getArtists() != null){
+            // 作曲家list 是否存在交集
+            return this.loader.getMusicList().stream().filter(m -> !Collections.disjoint(m.getArtists(), music.getArtists())).toList();
         }
         return new ArrayList<>();
     }
