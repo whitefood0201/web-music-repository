@@ -20,6 +20,11 @@ public interface MusicDao {
      */
     int insert(Music music);
     
+    /**
+     * delete using MID
+     * @param music
+     * @return
+     */
     boolean delete(Music music);
     
 }

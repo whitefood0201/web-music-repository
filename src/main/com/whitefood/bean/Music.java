@@ -1,12 +1,14 @@
 package com.whitefood.bean;
 
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Music {
     
     private int mid = -1;
     private String name;
     private int duration; // in second
+    private List<String> artists;
     
     public Music() {}
     
@@ -14,6 +16,13 @@ public class Music {
         this.mid = mid;
         this.name = name;
         this.duration = duration;
+    }
+    
+    public Music(int mid, String name, int duration, List<String> artists) {
+        this.mid = mid;
+        this.name = name;
+        this.duration = duration;
+        this.artists = artists;
     }
     
     public String getName() {
@@ -40,12 +49,24 @@ public class Music {
         this.duration = duration;
     }
     
+    public List<String> getArtists() {
+        return artists;
+    }
+    
+    public void setArtists(String... artists) {
+        this.artists = Arrays.stream(artists).toList();
+    }
+    
+    public void setArtists(List<String> artists) {
+        this.artists = artists;
+    }
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Music music = (Music) o;
-        return duration == music.duration && Objects.equals(name, music.name);
+        return duration == music.duration && Objects.equals(name, music.name) && Objects.equals(artists, music.artists);
     }
     
     @Override
@@ -58,11 +79,18 @@ public class Music {
      */
     @Override
     public String toString() {
-        return "{ \"mid\": %d, \"name\": \"%s.mp3\", \"duration\": %d }".formatted(this.mid, this.name, this.duration);
+        String artistsJsonArray = "[]";
+        if (this.artists != null){
+            artistsJsonArray = this.artists.stream()
+                .map(s -> "\"" + s + "\"")  // 给每个元素加引号
+                .collect(Collectors.joining(", ", "[", "]"));
+        }
+        
+        return "{ \"mid\": %d, \"name\": \"%s.mp3\", \"duration\": %d, \"artists\": %s}".formatted(this.mid, this.name, this.duration, artistsJsonArray);
     }
     
     /**
-     * Empty in sense of select, it means no mid no name.
+     * Empty in sense of select, it means no mid ni name.
      * @return
      */
     public boolean isEmpty() {

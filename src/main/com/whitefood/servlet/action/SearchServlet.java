@@ -26,9 +26,8 @@ public class SearchServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String searchText = req.getParameter("text");
-        MusicService.SelectWay way = MusicService.SelectWay.values()[Integer.parseInt(req.getParameter("way"))];
-        List<Music> music = service.selectBy(searchText, way);
-        
+        MusicService.SelectField field = MusicService.SelectField.values()[Integer.parseInt(req.getParameter("searchField"))];
+        List<Music> music = service.selectBy(searchText, field);
         
         resp.setContentType("text/json;charset=UTF-8");
         resp.setCharacterEncoding("UTF-8");

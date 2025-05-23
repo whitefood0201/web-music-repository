@@ -19,4 +19,30 @@ public class FileUtil {
         return file.delete();
     }
     
+    public static String getFileName(File file){
+        String fileName = file.getName();
+        int dotIndex = fileName.lastIndexOf('.');
+        if (dotIndex >= 0) {
+            fileName = fileName.substring(0, dotIndex);
+        }
+        return fileName;
+    }
+    
+    public static String getExt(File file){
+        String fileName = file.getName();
+        int dotIndex = fileName.lastIndexOf('.');
+        if (dotIndex >= 0) {
+            fileName = fileName.substring(dotIndex);
+        }
+        return fileName;
+    }
+    
+    public static String getExt(String fileName){
+        int dotIndex = fileName.lastIndexOf('.');
+        if (dotIndex >= 0) {
+            fileName = fileName.substring(dotIndex);
+        }
+        return fileName;
+    }
+    
 }

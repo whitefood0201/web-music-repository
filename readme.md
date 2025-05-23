@@ -5,7 +5,7 @@
 可以：
 - 上传音乐。
 - 查询已上传音乐。
-- 获取已上传音乐的 url 和时长。
+- 获取已上传音乐的 url 、时长及艺术家。
 
 在开发者预想中，本服务是用于给 [NetMusic](https://github.com/TartaricAcid/NetMusic) 这个 Minecraft Mod 提供资源的。
 
@@ -80,17 +80,7 @@ mp3 文件的存放位置，相对于项目所在文件夹
 
 另附 sql 脚本，用于建表：
 
-```sql
-drop table if exists t_mups;
-
-create table t_mups(
-        mid int primary key auto_increment,
-        mname varchar(255),
-        duration int
-);
-
-select * from t_mups;
-```
+`mups_script.sql`
 
 ### 通过 web 删除文件及数据
 

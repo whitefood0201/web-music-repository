@@ -10,21 +10,6 @@ var getRadioValue = function(radioName){
     }
 }
 
-var copyClick = function(copyText, button){
-    return () => {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(copyText).then(() => {
-                button.innerText = "copied";
-            }).catch(err => {
-                console.error("Clipboard error:", err);
-                fallbackCopyTextToClipboard(copyText, button);
-            });
-        } else {
-            fallbackCopyTextToClipboard(copyText, button);
-        }
-    };
-};
-
 function fallbackCopyTextToClipboard(text, button) {
     const textarea = document.createElement("textarea");
     textarea.value = text;
@@ -42,6 +27,29 @@ function fallbackCopyTextToClipboard(text, button) {
     document.body.removeChild(textarea);
 }
 
+var copyClick = function(copyText, button){
+    return () => {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(copyText).then(() => {
+                button.innerText = "copied";
+            }).catch(err => {
+                console.error("Clipboard error:", err);
+                fallbackCopyTextToClipboard(copyText, button);
+            });
+        } else {
+            fallbackCopyTextToClipboard(copyText, button);
+        }
+    };
+};
+
+var buildCopyBtn = function(text) {
+    var btn = document.createElement("button");
+    btn.innerText = "copy";
+    btn.className = "copy";
+    btn.onclick = copyClick(text, btn);
+    return btn;
+}
+
 window.onload = function(){
     var url_string = window.location.href;
 	const params = new URL(url_string).searchParams;
@@ -54,9 +62,9 @@ window.onload = function(){
 
 var loadData = function() {
     var searchText = document.getElementById("searchText").value;
-    var searchWay = getRadioValue("way");
+    var searchField = getRadioValue("searchField");
     const options = { method: 'POST' }
-    fetch(SEARCH_URL + "?text=" + searchText + "&way=" + searchWay, options)
+    fetch(SEARCH_URL + "?text=" + searchText + "&searchField=" + searchField, options)
         .then(response => {
             if (!response.ok)
                 throw new Error('Network response was not ok');
@@ -80,7 +88,9 @@ var showData = function(datas) {
     Array.from(table.children).forEach(removeNode);
 
     if (datas.length == 0){
-        datas = [{mid: "无数据", name: 0, duration: "无数据"}]
+        datas = [
+            {mid: "无数据", name: 0, duration: "无数据", artists: ["无", "数", "据"]}
+        ]
     }
 
     for (let i = 0; i < datas.length; i++) {
@@ -90,36 +100,32 @@ var showData = function(datas) {
         var url = STATIC_FOLDER + data.name;
         var duration = data.duration;
         
+        // mid
         const td_mid = document.createElement("td");
         td_mid.innerText = mid;
-
-        var copid = document.createElement("button");
-        copid.innerText = "copy";
-        copid.className = "copy"
-        copid.onclick = copyClick(mid, copid)
+        var copid = buildCopyBtn(mid);
         td_mid.appendChild(copid);
 
+        // url
         const td_url = document.createElement("td");
         td_url.innerHTML = (data.name === 0 ? "无数据" : `<a href="${url}">${data.name}</a>`);
-        
-        var coptx = document.createElement("button");
-        coptx.innerText = "copy";
-        coptx.className = "copy"
-        coptx.onclick = copyClick((data.name === 0 ? "无数据" : url), coptx)
+        var coptx = buildCopyBtn((data.name === 0 ? "无数据" : url));
         td_url.appendChild(coptx);
 
+        // artists
+        const td_artts = document.createElement("td");
+        td_artts.innerHTML = data.artists.join("/");
+
+        // duration
         const td_durat = document.createElement("td");
         td_durat.innerText = duration;
-
-        var copdu = document.createElement("button");
-        copdu.innerText = "copy";
-        copdu.className = "copy"
-        copdu.onclick = copyClick(duration, copdu)
+        var copdu = buildCopyBtn(duration)
         td_durat.appendChild(copdu);
 
         const tr = document.createElement("tr");
         tr.appendChild(td_mid);
         tr.appendChild(td_url);
+        tr.appendChild(td_artts);
         tr.appendChild(td_durat);
 
         table.appendChild(tr)

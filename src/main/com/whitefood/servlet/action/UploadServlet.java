@@ -53,22 +53,25 @@ public class UploadServlet extends HttpServlet {
                 return;
             }
         }
-        
         String fileName = Path.of(part.getSubmittedFileName()).getFileName().toString();
         
         String savePath = this.location.endsWith(File.separator) ? this.location : this.location + File.separator;
         FileUtil.createIfNotExists(new File(savePath));
         
-        String filepath = savePath+fileName;
+        String filepath = savePath+"temp"+FileUtil.getExt(fileName);
         boolean isSuccess = writeFile(part, filepath);
         
         if (isSuccess) {
             // 存入数据库
             int mid = this.service.add(new File(filepath));
-            resp.sendRedirect(this.getServletContext().getContextPath() + "/search.html?mid="+mid);
-        } else {
-            resp.sendRedirect(this.getServletContext().getContextPath() + "/error.html?msg=" + EncodingDecoder.encodingUTF8("上传失败"));
+            if (mid != -1){
+                resp.sendRedirect(this.getServletContext().getContextPath() + "/search.html?mid=" + mid);
+                return;
+            }
         }
+        
+        resp.sendRedirect(this.getServletContext().getContextPath() + "/error.html?msg=" + EncodingDecoder.encodingUTF8("上传失败"));
+        
     }
     
     /**
