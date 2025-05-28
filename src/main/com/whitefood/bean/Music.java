@@ -90,12 +90,15 @@ public class Music {
     }
     
     /**
-     * Empty in sense of select, it means no mid ni name.
+     * Empty in sense of select, it means no mid ni name ni artists.
      * @return
      */
     public boolean isEmpty() {
         return (this.name == null || this.name.isEmpty())
-                && this.mid == -1;
+                && this.mid == -1
+                && (this.getArtists() == null
+                    || this.getArtists().isEmpty()
+                    || this.getArtists().get(0).isEmpty());
         
     }
 }

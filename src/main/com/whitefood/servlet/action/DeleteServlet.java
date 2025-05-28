@@ -34,7 +34,7 @@ public class DeleteServlet extends HttpServlet {
             if (this.service.delete(mid)) {
                 writer.println("Delete Success!");
             } else {
-                writer.println("Delete Failed, or in database or in file.");
+                writer.println("Delete Failed, or on database or on file.");
             }
         } else {
             writer.println("?");

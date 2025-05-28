@@ -39,7 +39,7 @@ public class MusicServiceImpl extends MusicService {
     }
     
     @Override
-    public int add(File file) {
+    public int add(File file, String saveName) {
         Mp3Info mp3Info = null;
         try {
             mp3Info = new Mp3Info(file);
@@ -50,7 +50,7 @@ public class MusicServiceImpl extends MusicService {
         
         int duration = mp3Info.getDuration();
         String fileName = mp3Info.getTitle().isEmpty() ?
-                FileUtil.getFileName(file) : mp3Info.getTitle();
+                saveName : mp3Info.getTitle();
         List<String> artists = mp3Info.getArtists();
         
         Music music = new Music();
@@ -61,16 +61,26 @@ public class MusicServiceImpl extends MusicService {
         // 防重
         List<Music> all = this.selectAll();
         Optional<Music> first = all.stream().filter(m -> m.equals(music)).findFirst();
-        return first.map(Music::getMid).orElseGet(() -> {
-            File dest = new File(file.getParentFile(), fileName + FileUtil.getExt(file));
-            
-            boolean flg = true;
-            if (!dest.exists()){
-                flg = file.renameTo(dest);
-            }
-            
-            return flg ? this.dao.insert(music) : -1;
-        });
+        
+        int mid = first.map(Music::getMid).orElseGet(() -> this.dao.insert(music));
+        // 数据库写入失败
+        if (mid == -1) return -1;
+        
+        File dest = new File(file.getParentFile(), fileName + FileUtil.getExt(file));
+        if (dest.exists()) return mid;
+        
+        // 文件不存在，保存
+        boolean isSaved = file.renameTo(dest);
+        // 保存失败
+        if (!isSaved) {
+            // 数据库回滚。
+            Music m = new Music();
+            m.setMid(mid);
+            this.dao.delete(m);
+            return -1;
+        }
+        
+        return mid;
     }
     
     @Override

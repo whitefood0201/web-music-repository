@@ -7,9 +7,7 @@ import com.whitefood.listener.AppContextListener;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class MusicService {
     
@@ -34,12 +32,19 @@ public abstract class MusicService {
     }
     
     public final List<Music> selectBy(String param, SelectField field){
-        if(param.isEmpty() || field == SelectField.All){
+        if(field == SelectField.All || param == null || param.isEmpty()){
             return this.selectAll();
         } else if (field == SelectField.Name){
             return this.selectByName(param);
         } else if (field == SelectField.Mid){
-            return this.selectById(Integer.parseInt(param));
+            
+            try {
+                int mid = Integer.parseInt(param);
+                return this.selectById(mid);
+            } catch (NumberFormatException e){
+                return Collections.emptyList();
+            }
+            
         } else if (field == SelectField.Artists){
             return this.selectByArtist(param);
         }
@@ -56,10 +61,11 @@ public abstract class MusicService {
     protected abstract List<Music> selectAll();
     
     /**
-     * @param file saved music file
+     * @param tempFile saved music file, a temp file
+     * @param fn save name, without extension
      * @return the mid of inserted music
      */
-    public abstract int add(File file);
+    public abstract int add(File tempFile, String fn);
     
     public abstract boolean delete(int mid);
     

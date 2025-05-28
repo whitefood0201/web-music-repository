@@ -1,5 +1,6 @@
-var SEARCH_URL = "/mup/action/search";
-var STATIC_FOLDER = "/mup/static/";
+var APP_PATH = "/mup/"
+var SEARCH_URL = APP_PATH + "action/search";
+var PLAYLIST_URL = APP_PATH + "action/m3u8";
 
 var getRadioValue = function(radioName){
     var radio = document.getElementsByName(radioName);
@@ -8,46 +9,6 @@ var getRadioValue = function(radioName){
             return radio[i].value
         }
     }
-}
-
-function fallbackCopyTextToClipboard(text, button) {
-    const textarea = document.createElement("textarea");
-    textarea.value = text;
-    textarea.style.position = "fixed";
-    document.body.appendChild(textarea);
-    textarea.focus();
-    textarea.select();
-    try {
-        const successful = document.execCommand('copy');
-        button.innerText = successful ? "copied" : "failed";
-    } catch (err) {
-        console.error("Fallback failed:", err);
-        button.innerText = "error";
-    }
-    document.body.removeChild(textarea);
-}
-
-var copyClick = function(copyText, button){
-    return () => {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(copyText).then(() => {
-                button.innerText = "copied";
-            }).catch(err => {
-                console.error("Clipboard error:", err);
-                fallbackCopyTextToClipboard(copyText, button);
-            });
-        } else {
-            fallbackCopyTextToClipboard(copyText, button);
-        }
-    };
-};
-
-var buildCopyBtn = function(text) {
-    var btn = document.createElement("button");
-    btn.innerText = "copy";
-    btn.className = "copy";
-    btn.onclick = copyClick(text, btn);
-    return btn;
 }
 
 window.onload = function(){
@@ -64,13 +25,15 @@ var loadData = function() {
     var searchText = document.getElementById("searchText").value;
     var searchField = getRadioValue("searchField");
     const options = { method: 'POST' }
-    fetch(SEARCH_URL + "?text=" + searchText + "&searchField=" + searchField, options)
+    var url = SEARCH_URL + "?text=" + searchText + "&searchField=" + searchField
+    let encodedUrl = encodeURI(url)
+    fetch(encodedUrl, options)
         .then(response => {
             if (!response.ok)
                 throw new Error('Network response was not ok');
             return response.json();
-        }).then(data => {
-            showData(data.datas);
+        }).then(resp => {
+            showData(resp);
         }) .catch(error => {
              console.error('Error fetching JSON:', error);
              window.alert("服务器错误。请联系管理员");
@@ -78,7 +41,7 @@ var loadData = function() {
         });
 }
 
-var showData = function(datas) {
+var showData = function(resp) {
     var table = document.getElementById("show");
     var removeNode = function(node) {
         if (node.id !== "head"){
@@ -87,30 +50,32 @@ var showData = function(datas) {
     };
     Array.from(table.children).forEach(removeNode);
 
+    var datas = resp.datas;
     if (datas.length == 0){
         datas = [
             {mid: "无数据", name: 0, duration: "无数据", artists: ["无", "数", "据"]}
         ]
     }
 
+    var staticPath = resp.path;
     for (let i = 0; i < datas.length; i++) {
         const data = datas[i]
 
         var mid = data.mid;
-        var url = STATIC_FOLDER + data.name;
+        var url = APP_PATH + staticPath + data.name;
         var duration = data.duration;
         
         // mid
         const td_mid = document.createElement("td");
         td_mid.innerText = mid;
-        var copid = buildCopyBtn(mid);
-        td_mid.appendChild(copid);
+//        var copid = buildCopyBtn(mid);
+//        td_mid.appendChild(copid);
 
         // url
         const td_url = document.createElement("td");
         td_url.innerHTML = (data.name === 0 ? "无数据" : `<a href="${url}">${data.name}</a>`);
-        var coptx = buildCopyBtn((data.name === 0 ? "无数据" : url));
-        td_url.appendChild(coptx);
+//        var coptx = buildCopyBtn((data.name === 0 ? "无数据" : url));
+//        td_url.appendChild(coptx);
 
         // artists
         const td_artts = document.createElement("td");
@@ -119,8 +84,8 @@ var showData = function(datas) {
         // duration
         const td_durat = document.createElement("td");
         td_durat.innerText = duration;
-        var copdu = buildCopyBtn(duration)
-        td_durat.appendChild(copdu);
+//        var copdu = buildCopyBtn(duration)
+//        td_durat.appendChild(copdu);
 
         const tr = document.createElement("tr");
         tr.appendChild(td_mid);
@@ -130,4 +95,35 @@ var showData = function(datas) {
 
         table.appendChild(tr)
     }
+}
+
+
+var getPls = function(button) {
+    var host = document.location.origin;
+    var searchText = document.getElementById("searchText").value;
+    var searchField = getRadioValue("searchField");
+    var url = host + PLAYLIST_URL + "?host=" + host + "&text=" + searchText + "&searchField=" + searchField;
+    var encodedUrl = encodeURI(url)
+
+    copyTextToClipboard(encodedUrl, button)
+    document.getElementById("plist").href = encodedUrl;
+    document.getElementById("plist").innerText = "播放列表链接";
+}
+
+function copyTextToClipboard(text, button) {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.style.position = "fixed";
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            var text = button.innerHTML
+            button.innerHTML = "已复制!"
+            setTimeout(() => button.innerHTML = text, 2000);
+        }
+    } catch (err) {}
+    document.body.removeChild(textarea);
 }

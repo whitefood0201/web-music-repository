@@ -21,12 +21,13 @@ public class ConnectionPool {
     
     public static final int MAX_CONNECTIONS = 5;
     
-    private static ConnectionPool instance;
+    // 单例——内部静态类，保证线程安全。
+    private static class Handler {
+        private static final ConnectionPool instance = new ConnectionPool();
+    }
     
     public static ConnectionPool getConnectionPool() {
-        if (instance == null)
-            instance = new ConnectionPool();
-        return instance;
+        return Handler.instance;
     }
     
     public String url;

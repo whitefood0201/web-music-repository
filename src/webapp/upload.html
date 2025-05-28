@@ -26,4 +26,15 @@
             <input class="subm" type="submit" value="上传" />
         </form>
     </div>
+    <span id="info" style="color: red"></span>
+
+    <script>
+        document.getElementById("selectFile").addEventListener("change", function (e) {
+            const file = e.target.files[0];
+            if (file && file.size > 15 * 1024 * 1024) { // 15MB
+                document.getElementById('info').textContent = "文件不能超过15MB！"
+                e.target.value = ''; // 清除文件
+            }
+        });
+    </script>
 </body>

@@ -1,5 +1,6 @@
 package com.whitefood.util;
 
+import java.awt.*;
 import java.io.File;
 
 public class FileUtil {
@@ -20,7 +21,9 @@ public class FileUtil {
     }
     
     public static String getFileName(File file){
-        String fileName = file.getName();
+        return getFileName(file.getName());
+    }
+    public static String getFileName(String fileName){
         int dotIndex = fileName.lastIndexOf('.');
         if (dotIndex >= 0) {
             fileName = fileName.substring(0, dotIndex);
@@ -29,7 +32,9 @@ public class FileUtil {
     }
     
     public static String getExt(File file){
-        String fileName = file.getName();
+        return getExt(file.getName());
+    }
+    public static String getExt(String fileName){
         int dotIndex = fileName.lastIndexOf('.');
         if (dotIndex >= 0) {
             fileName = fileName.substring(dotIndex);
@@ -37,12 +42,26 @@ public class FileUtil {
         return fileName;
     }
     
-    public static String getExt(String fileName){
-        int dotIndex = fileName.lastIndexOf('.');
-        if (dotIndex >= 0) {
-            fileName = fileName.substring(dotIndex);
+    
+    public static String folderPathStd(String folder) {
+        return folderPathStd(folder, "/");
+    }
+    
+    /**
+     * @param folder
+     * @param separator
+     * @return "folderName<separotor>"
+     */
+    public static String folderPathStd(String folder, String separator){
+        if (folder == null) return separator;
+        String s = folder;
+        if (folder.startsWith("/") || folder.startsWith("\\")){
+            s = s.substring(1);
         }
-        return fileName;
+        if (folder.endsWith("/") || folder.endsWith("\\")){
+            s = s.substring(0, folder.length()-1);
+        }
+        return s + separator;
     }
     
 }

@@ -100,3 +100,13 @@ mid | mname | duration
   ]
 }
 ```
+
+#### m3u8
+
+前端select上按钮——播放列表。
+监听按钮发送请求至getM3u8?url=?
+sevlet监听 getM3u8?url=? 并通过给定url生成m3u8。
+后端将 .m3u8 返回为文本
+JS 给 .m3u8 提供一个地址供 PotPlayer 播放
+
+Content-Type: application/vnd.apple.mpegurl

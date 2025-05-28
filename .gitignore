@@ -3,3 +3,5 @@ test
 database.properties
 release
 .idea
+*.mp3
+*.m3u8

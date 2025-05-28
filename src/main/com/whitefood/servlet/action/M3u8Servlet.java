@@ -15,10 +15,10 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.Optional;
 
-@WebServlet("/action/search")
-public class SearchServlet extends HttpServlet {
+@WebServlet("/action/m3u8")
+public class M3u8Servlet extends HttpServlet {
     
-    MusicService service = new MusicServiceImpl();
+    private MusicService service = new MusicServiceImpl();
     
     private String location;
     
@@ -35,6 +35,7 @@ public class SearchServlet extends HttpServlet {
     
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String host = req.getParameter("host");
         String searchText = req.getParameter("text");
         int searchField = Integer.parseInt(Optional
                 .ofNullable(req.getParameter("searchField"))
@@ -43,21 +44,27 @@ public class SearchServlet extends HttpServlet {
         if (searchField > 3) throw new IllegalArgumentException("Unsupported Field");
         
         MusicService.SelectField field = MusicService.SelectField.values()[searchField];
+        this.getServletConfig().getInitParameter("staticPath");
         List<Music> musics = service.selectBy(searchText, field);
         
-        resp.setContentType("text/json;charset=UTF-8");
+        String s = musics.isEmpty() ? "No Data" :
+                String.join("\n", musics.stream().map(m -> {
+                    // 拼接绝对路径
+                    return FileUtil.folderPathStd(host)
+                            + FileUtil.folderPathStd(this.getServletContext().getContextPath())
+                            + this.location
+                            + m.getName() + ".mp3";
+                }).toList());
+        
+        resp.setContentType("application/vnd.apple.mpegurl");
         resp.setCharacterEncoding("UTF-8");
         
         PrintWriter out = resp.getWriter();
         
-        out.println("{");
-        out.println("\"response\": 200,");
-        out.println("\"path\": \"%s\",".formatted(this.location));
-        out.println("\"datas\":" + musics);
-        out.println("}");
+        out.println("#EXTM3U8");
+        out.println(s);
         
         out.flush();
         out.close();
     }
-    
 }

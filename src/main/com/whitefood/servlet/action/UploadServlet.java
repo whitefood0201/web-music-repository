@@ -1,12 +1,10 @@
 package com.whitefood.servlet.action;
 
-import com.whitefood.listener.AppContextListener;
 import com.whitefood.service.MusicService;
 import com.whitefood.service.impl.MusicServiceImpl;
 import com.whitefood.util.FileUtil;
 import com.whitefood.util.EncodingDecoder;
 import com.whitefood.util.Mp3EnhancedDetector;
-import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -22,29 +20,36 @@ import java.nio.file.Path;
 
 
 @WebServlet("/action/upload")
-@MultipartConfig(
-        fileSizeThreshold = 1024*1024 * 3, // 3MB
-        maxFileSize = 1024*1024 * 15, // 15MB
-        maxRequestSize = 1024*1024 * 17 // 17MB
-)
+@MultipartConfig
 public class UploadServlet extends HttpServlet {
     
     private MusicService service = new MusicServiceImpl();
     
     // 上传配置
-    private String location;
+    private String savePath;
     
     @Override
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
-        this.location = this.getServletContext().getRealPath(AppContextListener.getServletContext().getInitParameter("staticPath"));
+    public void init() throws ServletException {
+        super.init();
+        String staticPath = this.getServletContext().getInitParameter("staticPath");
+        String realPath = this.getServletContext().getRealPath(staticPath);
+        this.savePath = FileUtil.folderPathStd(realPath, File.separator);
         
+        FileUtil.createIfNotExists(new File(this.savePath));
     }
     
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Part part = req.getPart("file");
         
+        // 判断文件大小
+        if (part.getSize() > 15 * 1024 * 1024){
+            resp.sendRedirect(this.getServletContext().getContextPath() + "/error.html?msg="
+                    + EncodingDecoder.encodingUTF8("文件过大"));
+            return;
+        }
+        
+        // 检查格式
         try (InputStream fis = part.getInputStream()){
             Mp3EnhancedDetector detector = new Mp3EnhancedDetector();
             Mp3EnhancedDetector.Mp3Type type = detector.detectMp3Type(fis);
@@ -53,23 +58,22 @@ public class UploadServlet extends HttpServlet {
                 return;
             }
         }
+        
+        
         String fileName = Path.of(part.getSubmittedFileName()).getFileName().toString();
         
-        String savePath = this.location.endsWith(File.separator) ? this.location : this.location + File.separator;
-        FileUtil.createIfNotExists(new File(savePath));
-        
-        String filepath = savePath+"temp"+FileUtil.getExt(fileName);
+        // 保存为 temp 文件，后续写入数据库后在改名
+        String filepath = this.savePath + "temp" + FileUtil.getExt(fileName);
         boolean isSuccess = writeFile(part, filepath);
         
         if (isSuccess) {
             // 存入数据库
-            int mid = this.service.add(new File(filepath));
+            int mid = this.service.add(new File(filepath), FileUtil.getFileName(fileName));
             if (mid != -1){
                 resp.sendRedirect(this.getServletContext().getContextPath() + "/search.html?mid=" + mid);
                 return;
             }
         }
-        
         resp.sendRedirect(this.getServletContext().getContextPath() + "/error.html?msg=" + EncodingDecoder.encodingUTF8("上传失败"));
         
     }
@@ -77,7 +81,7 @@ public class UploadServlet extends HttpServlet {
     /**
      *
      * @param part
-     * @return msg
+     * @return isSuccess
      */
     private boolean writeFile(Part part, String filepath){
         boolean isSuccess = false;

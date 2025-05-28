@@ -10,9 +10,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class DBMusicDao implements MusicDao {
+public class DBMusicDao extends MusicDao {
     
     private static final String SELECT_TEMPLATE = "select mid, mname, duration, martists from t_mups";
     
@@ -21,26 +22,52 @@ public class DBMusicDao implements MusicDao {
     public DBMusicDao() {}
     
     @Override
-    public List<Music> select(Music music) {
+    protected List<Music> selectById(Music music) {
+        return DBSelect(music, (m, connection) -> {
+            PreparedStatement ps = connection.prepareStatement(SELECT_TEMPLATE + " where mid = ?");
+            ps.setInt(1, music.getMid());
+            return ps;
+        });
+    }
+    
+    @Override
+    protected List<Music> selectByName(Music music) {
+        return DBSelect(music, (m, connection) -> {
+            PreparedStatement ps = connection.prepareStatement(SELECT_TEMPLATE + " where mname like ?");
+            ps.setString(1, "%"+music.getName()+"%");
+            return ps;
+        });
+    }
+    
+    @Override
+    protected List<Music> selectByArtist(Music music) {
+        return DBSelect(music, (m, connection) -> {
+            PreparedStatement ps = connection.prepareStatement(SELECT_TEMPLATE + " where martists like ?");
+            ps.setString(1, "%"+String.join("%", music.getArtists())+"%");
+            return ps;
+        });
+    }
+    
+    @Override
+    protected List<Music> selectAll() {
+        return DBSelect(null, (m, connection) ->
+                connection.prepareStatement(SELECT_TEMPLATE));
+    }
+    
+    /**
+     * 接收一个 lambda 用于指定 sql 语句
+     * @param music 传递给 lambda 的 music 对象
+     * @param sqlBuilder lambda
+     * @return
+     */
+    private List<Music> DBSelect(Music music, SqlStatementBuilder<Music> sqlBuilder){
         Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         
         try {
             connection = this.pool.getConnection();
-            
-            if (music == null || music.isEmpty() || music.getMid() == 0){
-                ps = connection.prepareStatement(SELECT_TEMPLATE);
-            } else if (music.getMid() > 0){
-                ps = connection.prepareStatement(SELECT_TEMPLATE + " where mid = ?");
-                ps.setInt(1, music.getMid());
-            } else if (music.getName() != null){
-                ps = connection.prepareStatement(SELECT_TEMPLATE + " where mname like ?");
-                ps.setString(1, "%"+music.getName()+"%");
-            } else if (music.getArtists() != null) {
-                ps = connection.prepareStatement(SELECT_TEMPLATE + " where martists like ?");
-                ps.setString(1, "%"+String.join("%", music.getArtists())+"%");
-            }
+            ps = sqlBuilder.get(music, connection);
             
             if (ps != null) {
                 List<Music> list = new ArrayList<>();
@@ -62,7 +89,7 @@ public class DBMusicDao implements MusicDao {
             this.pool.close(connection, ps, rs);
         }
         
-        return new ArrayList<>();
+        return Collections.emptyList();
     }
     
     @Override
@@ -129,5 +156,15 @@ public class DBMusicDao implements MusicDao {
         }
         
         return rowAffected != 0;
+    }
+    
+    @FunctionalInterface
+    private interface SqlStatementBuilder<T> {
+        /**
+         * build a PreparedStatement
+         * @param t argument
+         * @throws SQLException
+         */
+        PreparedStatement get(T t, Connection connection) throws SQLException;
     }
 }

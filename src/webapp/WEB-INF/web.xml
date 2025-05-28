@@ -82,6 +82,15 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>m3u8Servlet</servlet-name>
+        <servlet-class>com.whitefood.servlet.action.M3u8Servlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>m3u8Servlet</servlet-name>
+        <url-pattern>/action/m3u8</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>deleteServlet</servlet-name>
         <servlet-class>com.whitefood.servlet.action.DeleteServlet</servlet-class>
     </servlet>
@@ -90,8 +99,9 @@
         <url-pattern>/action/delete</url-pattern>
     </servlet-mapping>
 
-
+    
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
+
 </web-app>
