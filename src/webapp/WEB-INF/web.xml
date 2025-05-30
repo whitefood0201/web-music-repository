@@ -22,6 +22,12 @@
         <param-value>/db/musics.txt</param-value>
     </context-param>
 
+    <!--  in MB  -->
+    <context-param>
+        <param-name>maxFileSize</param-name>
+        <param-value>5</param-value>
+    </context-param>
+
     <context-param>
         <param-name>url</param-name>
         <param-value>jdbc:mysql://localhost:3306/web?useUnicode=true&amp;characterEncoding=utf8</param-value>
