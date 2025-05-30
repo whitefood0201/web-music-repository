@@ -15,7 +15,7 @@
 
 ## 下载
 
-- [Github](https://github.com/whitefood0201/web-music-repository/releases/latest/download/web-music-repository_release-v1.3.0.zip)
+- [Github](https://github.com/whitefood0201/web-music-repository/releases/latest/download/web-music-repository_release-v1.3.1.zip)
 - [百度网盘](https://pan.baidu.com/s/1apdSNqrU3CED5QgWcpOz9A?pwd=mups) 提取码：mups
     - 注：可以直接通过浏览器下载
 

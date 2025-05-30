@@ -27,6 +27,7 @@ public class UploadServlet extends HttpServlet {
     
     // 上传配置
     private String savePath;
+    private int maxFileSize; // in MB
     
     @Override
     public void init() throws ServletException {
@@ -36,6 +37,8 @@ public class UploadServlet extends HttpServlet {
         this.savePath = FileUtil.folderPathStd(realPath, File.separator);
         
         FileUtil.createIfNotExists(new File(this.savePath));
+        
+        this.maxFileSize = Integer.parseInt(this.getServletContext().getInitParameter("maxFileSize"));
     }
     
     @Override
@@ -43,9 +46,9 @@ public class UploadServlet extends HttpServlet {
         Part part = req.getPart("file");
         
         // 判断文件大小
-        if (part.getSize() > 15 * 1024 * 1024){
+        if (part.getSize() > (long) this.maxFileSize * 1024 * 1024){
             resp.sendRedirect(this.getServletContext().getContextPath() + "/error.html?msg="
-                    + EncodingDecoder.encodingUTF8("文件过大"));
+                    + EncodingDecoder.encodingUTF8("文件过大，应小于 %d MB".formatted(this.maxFileSize)));
             return;
         }
         
