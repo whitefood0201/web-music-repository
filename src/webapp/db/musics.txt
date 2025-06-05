@@ -1,2 +1,2 @@
 id_max=0
-mid | mname | duration | artists
+mid | mname | artists | duration | type

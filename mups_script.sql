@@ -4,6 +4,7 @@ create table t_mups(
         mid int primary key auto_increment,
         mname varchar(255),
         martists varchar(255),
+        type varchar(255),
         duration int
 );
 

@@ -1,6 +1,5 @@
 package com.whitefood.util;
 
-import java.awt.*;
 import java.io.File;
 
 public class FileUtil {

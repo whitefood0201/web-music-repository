@@ -4,18 +4,16 @@
 
 可以：
 - 上传音乐。
-- 查询已上传音乐。
+- 查询已上传音乐。支持 mp3 和 flac。
 - 获取已上传音乐的 url 、时长及艺术家。
 
 在开发者预想中，本服务是用于给 [NetMusic](https://github.com/TartaricAcid/NetMusic) 这个 Minecraft Mod 提供资源的。
-
-由于该 mod 只貌似支持 .mp3 文件，所以开发者就没有提供其他文件格式的上传。
 
 未来开发者可能会写一个 NetMusic 的附属 mod，直接接入该服务。~~// 在新建文件夹了（逃~~
 
 ## 下载
 
-- [Github](https://github.com/whitefood0201/web-music-repository/releases/latest/download/web-music-repository_release-v1.3.1.zip)
+- [Github](https://github.com/whitefood0201/web-music-repository/releases/latest/download/web-music-repository_release-v1.4.0.zip)
 - [百度网盘](https://pan.baidu.com/s/1apdSNqrU3CED5QgWcpOz9A?pwd=mups) 提取码：mups
     - 注：可以直接通过浏览器下载
 
@@ -23,14 +21,23 @@
 
 在 `/WEB-INF/web.xml` 中。
 
-### mp3 存放位置
+### 文件配置
 
-mp3 文件的存放位置，相对于项目所在文件夹
+音乐文件的存放位置，相对于项目所在文件夹
 
 ```xml
 <context-param>
     <param-name>staticPath</param-name>
     <param-value>/static</param-value>
+</context-param>
+```
+
+上传文件大小限制，单位为 MB
+
+```xml
+<context-param>
+    <param-name>maxFileSize</param-name>
+    <param-value>30</param-value>
 </context-param>
 ```
 
@@ -75,6 +82,11 @@ mp3 文件的存放位置，相对于项目所在文件夹
 <context-param>
     <param-name>password</param-name>
     <param-value></param-value>
+</context-param>
+<!-- 最大数据库连接对象数量 -->
+<context-param>
+    <param-name>maxConnections</param-name>
+    <param-value>5</param-value>
 </context-param>
 ```
 

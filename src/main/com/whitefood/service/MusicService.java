@@ -47,7 +47,10 @@ public abstract class MusicService {
             
         } else if (field == SelectField.Artists){
             return this.selectByArtist(param);
+        } else if (field == SelectField.Type){
+            return this.selectByType(!param.startsWith(".") ? "."+param : param);
         }
+        
         
         throw new IllegalArgumentException("Unsupported Field");
     }
@@ -58,18 +61,21 @@ public abstract class MusicService {
     
     protected abstract List<Music> selectByArtist(String artist);
     
+    protected abstract List<Music> selectByType(String type);
+    
     protected abstract List<Music> selectAll();
     
     /**
-     * @param tempFile saved music file, a temp file
-     * @param fn save name, without extension
-     * @return the mid of inserted music
+     * @param tempFile saved music file, a temp file, with extension.
+     * @param fn save name, without extension.
+     * @return the mid of inserted music.
      */
     public abstract int add(File tempFile, String fn);
     
     public abstract boolean delete(int mid);
     
     public enum SelectField {
-        Mid, Name, Artists, All;
+        Mid, Name, Artists, Type,
+        All;
     }
 }

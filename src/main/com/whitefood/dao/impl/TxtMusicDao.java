@@ -5,6 +5,7 @@ import com.whitefood.dao.MusicDao;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class TxtMusicDao extends MusicDao {
     
@@ -19,8 +20,11 @@ public class TxtMusicDao extends MusicDao {
     
     @Override
     protected List<Music> selectByArtist(Music music) {
-        // 作曲家list 是否存在交集
-        return this.loader.getMusicList().stream().filter(m -> !Collections.disjoint(m.getArtists(), music.getArtists())).toList();
+        return this.loader.getMusicList().stream().filter(m -> {
+            String s1 = String.join("/", m.getArtists());
+            String s2 = String.join("/", music.getArtists());
+            return s1.contains(s2);
+        }).toList();
     }
     
     @Override
@@ -31,6 +35,11 @@ public class TxtMusicDao extends MusicDao {
     @Override
     protected List<Music> selectById(Music music) {
         return this.loader.getMusicList().stream().filter(m -> m.getMid() == music.getMid()).toList();
+    }
+    
+    @Override
+    protected List<Music> selectByType(Music music) {
+        return this.loader.getMusicList().stream().filter(m -> Objects.equals(m.getType(), music.getType())).toList();
     }
     
     @Override

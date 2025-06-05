@@ -6,17 +6,18 @@ import java.io.InputStream;
 /**
  * thanks chatgpt
  */
-public class Mp3EnhancedDetector {
+public class AudioEnhancedDetector {
     
-    public enum Mp3Type {
+    public enum FileType {
         ID3_TAG,
         RAW_MPEG_STREAM,
+        FLAC,
         INVALID
     }
     
-    public Mp3Type detectMp3Type(InputStream inputStream) {
+    public FileType detectFileType(InputStream inputStream) {
         if (inputStream == null) {
-            return Mp3Type.INVALID;
+            return FileType.INVALID;
         }
         
         try {
@@ -24,34 +25,34 @@ public class Mp3EnhancedDetector {
             
             byte[] header = new byte[4];
             int bytesRead = inputStream.read(header);
-            if (bytesRead < 3) {
-                return Mp3Type.INVALID;
+            if (bytesRead < 4) {
+                return FileType.INVALID;
             }
             
-            String headStr = new String(header, 0, 3, "ISO-8859-1");
-            if ("ID3".equals(headStr)) {
-                return Mp3Type.ID3_TAG;
-            } else if (bytesRead == 4) {
+            String headStr = new String(header, 0, 4, "ISO-8859-1");
+            
+            if ("ID3".equals(headStr.substring(0, 3))) {
+                return FileType.ID3_TAG;
+            } else if ("fLaC".equals(headStr)) {
+                return FileType.FLAC;
+            } else {
                 boolean isSync = (header[0] & 0xFF) == 0xFF &&
                         (header[1] & 0xE0) == 0xE0;
                 if (isSync) {
-                    return Mp3Type.RAW_MPEG_STREAM;
+                    return FileType.RAW_MPEG_STREAM;
                 } else {
-                    return Mp3Type.INVALID;
+                    return FileType.INVALID;
                 }
-            } else {
-                return Mp3Type.INVALID;
             }
         } catch (IOException e) {
             e.printStackTrace();
-            return Mp3Type.INVALID;
+            return FileType.INVALID;
         } finally {
             try {
                 inputStream.reset(); // 恢复到标记位置
             } catch (IOException e) {
-                // 如果流不支持 reset，可以忽略
+                // 忽略 reset 异常
             }
         }
     }
-    
 }

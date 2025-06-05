@@ -15,7 +15,7 @@ import java.util.List;
 
 public class DBMusicDao extends MusicDao {
     
-    private static final String SELECT_TEMPLATE = "select mid, mname, duration, martists from t_mups";
+    private static final String SELECT_TEMPLATE = "select mid, mname, duration, martists, type from t_mups";
     
     ConnectionPool pool = ConnectionPool.getConnectionPool();
     
@@ -44,6 +44,15 @@ public class DBMusicDao extends MusicDao {
         return DBSelect(music, (m, connection) -> {
             PreparedStatement ps = connection.prepareStatement(SELECT_TEMPLATE + " where martists like ?");
             ps.setString(1, "%"+String.join("%", music.getArtists())+"%");
+            return ps;
+        });
+    }
+    
+    @Override
+    protected List<Music> selectByType(Music music) {
+        return DBSelect(music, (m, connection) -> {
+            PreparedStatement ps = connection.prepareStatement(SELECT_TEMPLATE + " where type=?");
+            ps.setString(1, music.getType());
             return ps;
         });
     }
@@ -78,6 +87,7 @@ public class DBMusicDao extends MusicDao {
                     m.setMid(rs.getInt("mid"));
                     m.setName(rs.getString("mname"));
                     m.setArtists(rs.getString("martists").split("/"));
+                    m.setType(rs.getString("type"));
                     list.add(m);
                 }
                 return list;
@@ -99,11 +109,12 @@ public class DBMusicDao extends MusicDao {
         
         try {
             con = this.pool.getConnection();
-            ps = con.prepareStatement("insert into t_mups(mname, duration, martists) values(?, ?, ?)");
+            ps = con.prepareStatement("insert into t_mups(mname, duration, martists, type) values(?, ?, ?, ?)");
             
             ps.setString(1, music.getName());
             ps.setInt(2, music.getDuration());
             ps.setString(3, String.join("/", music.getArtists()));
+            ps.setString(4, music.getType());
             ps.executeUpdate();
         } catch (SQLException e) {
             AppContextListener.getServletContext().log("while append data to db: ", e);
