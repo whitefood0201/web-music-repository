@@ -2,9 +2,9 @@ package com.whitefood.servlet.action;
 
 import com.whitefood.service.MusicService;
 import com.whitefood.service.impl.MusicServiceImpl;
+import com.whitefood.util.AudioEnhancedDetector;
 import com.whitefood.util.FileUtil;
 import com.whitefood.util.EncodingDecoder;
-import com.whitefood.util.Mp3EnhancedDetector;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -54,10 +54,10 @@ public class UploadServlet extends HttpServlet {
         
         // 检查格式
         try (InputStream fis = part.getInputStream()){
-            Mp3EnhancedDetector detector = new Mp3EnhancedDetector();
-            Mp3EnhancedDetector.Mp3Type type = detector.detectMp3Type(fis);
-            if (type == Mp3EnhancedDetector.Mp3Type.INVALID){
-                resp.sendRedirect(this.getServletContext().getContextPath() + "/error.html?msg=" + EncodingDecoder.encodingUTF8("并非mp3文件"));
+            AudioEnhancedDetector detector = new AudioEnhancedDetector();
+            AudioEnhancedDetector.FileType type = detector.detectFileType(fis);
+            if (type == AudioEnhancedDetector.FileType.INVALID){
+                resp.sendRedirect(this.getServletContext().getContextPath() + "/error.html?msg=" + EncodingDecoder.encodingUTF8("不支持的文件格式"));
                 return;
             }
         }

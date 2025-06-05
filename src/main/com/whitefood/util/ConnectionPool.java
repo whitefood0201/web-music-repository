@@ -19,7 +19,8 @@ import java.util.Stack;
  */
 public class ConnectionPool {
     
-    public static final int MAX_CONNECTIONS = 5;
+    public static final int MAX_CONNECTIONS =
+            Integer.parseInt(AppContextListener.getServletContext().getInitParameter("maxConnections"));
     
     // 单例——内部静态类，保证线程安全。
     private static class Handler {

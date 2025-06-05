@@ -20,6 +20,8 @@ public abstract class MusicDao {
             return this.selectById(music);
         } else if (music.getName() != null){
             return this.selectByName(music);
+        } else if (music.getType() != null) {
+            return this.selectByType(music);
         } else if (music.getArtists() != null || !music.getArtists().isEmpty()) {
             return this.selectByArtist(music);
         }
@@ -31,6 +33,8 @@ public abstract class MusicDao {
     protected abstract List<Music> selectByName(Music music);
     
     protected abstract List<Music> selectByArtist(Music music);
+    
+    protected abstract List<Music> selectByType(Music music);
     
     protected abstract List<Music> selectAll();
     

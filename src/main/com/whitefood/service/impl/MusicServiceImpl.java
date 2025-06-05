@@ -39,6 +39,13 @@ public class MusicServiceImpl extends MusicService {
     }
     
     @Override
+    protected List<Music> selectByType(String type) {
+        Music music = new Music();
+        music.setType(type);
+        return this.dao.select(music);
+    }
+        
+        @Override
     public int add(File file, String saveName) {
         Mp3Info mp3Info = null;
         try {
@@ -57,6 +64,7 @@ public class MusicServiceImpl extends MusicService {
         music.setDuration(duration);
         music.setName(fileName);
         music.setArtists(artists);
+        music.setType(FileUtil.getExt(file));
         
         // 防重
         List<Music> all = this.selectAll();

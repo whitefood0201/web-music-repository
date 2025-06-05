@@ -16,7 +16,7 @@ import java.util.*;
  */
 public class TxtLoader {
     
-    public static final String DATA_STRUCTURE = "mid | mname | duration | artists";
+    public static final String DATA_STRUCTURE = "mid | mname | artists | duration | type";
     
     private static TxtLoader instance;
     
@@ -61,8 +61,9 @@ public class TxtLoader {
                     String name = d[1];
                     List<String> artists = Arrays.stream(d[2].split("/")).toList();
                     int duration = Integer.parseInt(d[3]);
+                    String type = d[4];
                     
-                    musics.add(new Music(mid, name, duration, artists));
+                    musics.add(new Music(mid, name, duration, artists, type));
                 }
                 
                 this.idMax = idMax;
@@ -97,6 +98,8 @@ public class TxtLoader {
                 writer.write(String.join("/", music.getArtists()));
                 writer.write(" | ");
                 writer.write(String.valueOf(music.getDuration()));
+                writer.write(" | ");
+                writer.write(music.getType());
                 writer.newLine();
             }
             

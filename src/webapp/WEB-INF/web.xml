@@ -25,7 +25,7 @@
     <!--  in MB  -->
     <context-param>
         <param-name>maxFileSize</param-name>
-        <param-value>5</param-value>
+        <param-value>30</param-value>
     </context-param>
 
     <context-param>
@@ -43,6 +43,10 @@
     <context-param>
         <param-name>password</param-name>
         <param-value>1919810</param-value>
+    </context-param>
+    <context-param>
+        <param-name>maxConnections</param-name>
+        <param-value>5</param-value>
     </context-param>
 
     <!--  Using deleteServlet? -->

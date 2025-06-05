@@ -40,7 +40,7 @@ public class SearchServlet extends HttpServlet {
                 .ofNullable(req.getParameter("searchField"))
                 .orElse(String.valueOf(MusicService.SelectField.values().length - 1))); // All
         
-        if (searchField > 3) throw new IllegalArgumentException("Unsupported Field");
+        if (searchField >= MusicService.SelectField.values().length) throw new IllegalArgumentException("Unsupported Field");
         
         MusicService.SelectField field = MusicService.SelectField.values()[searchField];
         List<Music> musics = service.selectBy(searchText, field);

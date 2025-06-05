@@ -53,7 +53,7 @@ public class M3u8Servlet extends HttpServlet {
                     return FileUtil.folderPathStd(host)
                             + FileUtil.folderPathStd(this.getServletContext().getContextPath())
                             + this.location
-                            + m.getName() + ".mp3";
+                            + m.getName() + m.getType();
                 }).toList());
         
         resp.setContentType("application/vnd.apple.mpegurl");
